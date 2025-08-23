@@ -4,6 +4,7 @@ import './index.css'
 import App from './App.jsx'
 import{ BrowserRouter } from 'react-router-dom'
  import { ClerkProvider } from '@clerk/clerk-react'
+ import { AppProvider } from './context/AppContext.jsx'
 
 // I am using clerk for the signup form . Its a readymade form and we need to have this thing particularly the publishable key for usage 
 // Import your own Publishable Key
@@ -17,7 +18,9 @@ if (!PUBLISHABLE_KEY) {
 createRoot(document.getElementById('root')).render(
   <ClerkProvider publishableKey={PUBLISHABLE_KEY}>
     <BrowserRouter>
-     <App />
+      <AppProvider>
+        <App />
+      </AppProvider>
    </BrowserRouter>
   </ClerkProvider>
 )

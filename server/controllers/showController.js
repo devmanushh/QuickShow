@@ -7,27 +7,24 @@ import Show from "../models/Show.js";
 export const getNowPlayingMovies = async (req, res) => {
   try {
     const { data } = await axios.get(
-      "https://api.themoviedb.org/3/movie/now_playing",
-      {
-        headers: { Authorization: `Bearer ${process.env.TMDB_API_KEY}` },
-      }
-    );
-
+      'https://api.themoviedb.org/3/movie/now_playing',
+      {  headers: { Authorization: `Bearer ${process.env.TMDB_API_KEY}` },}
+    )
     const movies = data.results;
-    res.json({ success: true, movies: movies });
+    res.json({ success: true, movies: movies })
+
   } catch (error) {
     console.error(error);
-    res.json({ success: false, message: error.message });
+    res.json({ success: false, message: error.message })
   }
-};
-
+}
 // Controller function to add new movies from api
 export const addShow = async (req, res) => {
   try {
-    const { movieId, showsInput, showPrice } = req.body;
+    const { movieId, showsInput, showPrice } = req.body
 
     // First check if movie exists in MongoDB
-    let movie = await Movie.findOne({ tmdbId: movieId });
+    let movie = await Movie.findById(movieId);
 
     if (!movie) {
       // fetch movie and cast data from tmdb
@@ -44,7 +41,7 @@ export const addShow = async (req, res) => {
       const movieCreditsData = movieCreditsResponse.data;
 
       const movieDetails = {
-        tmdbId: movieId, // ✅ store TMDB ID properly
+        _id: movieId, //
         title: movieApiData.title,
         overview: movieApiData.overview,
         poster_path: movieApiData.poster_path,
@@ -57,24 +54,22 @@ export const addShow = async (req, res) => {
         vote_average: movieApiData.vote_average,
         runtime: movieApiData.runtime,
       };
-
+//add movie to db 
       movie = await Movie.create(movieDetails);
     }
-
-    const showsToCreate = [];
-
+    const showsToCreate = []
     if (Array.isArray(showsInput)) {
-      showsInput.forEach((show) => {
+      showsInput.forEach(show=> {
         const showDate = show.date;
         show.time.forEach((time) => {
           const dateTimeString = `${showDate}T${time}`;
           showsToCreate.push({
-            movie: movie._id, // ✅ use Mongo ObjectId reference
+            movie: movieId, // ✅ use Mongo ObjectId reference
             showDateTime: new Date(dateTimeString),
             showPrice,
             occupiedSeats: {},
-          });
-        });
+          })
+        })
       });
     }
 
@@ -90,23 +85,35 @@ export const addShow = async (req, res) => {
 };
 
 
-// Controller to get all shows
+// Controller api to get all shows
 export const getShows = async (req, res) => {
   try {
-    const shows = await Show.find().populate("movie");
-    res.json({ success: true, shows });
+    const shows = await Show.find({showDateTime: {$gte: new Date()}}).populate("movie").sort({showDateTime: 1});
+    const uniqueShows = new Set(shows.map(show => show.movie))
+    res.json({ success: true, shows: Array.from(uniqueShows) });
   } catch (error) {
     console.error(error);
     res.json({ success: false, message: error.message });
   }
 };
 
-// Controller to get shows by movieId
+// Controller to get  single show by movieId
 export const getShow = async (req, res) => {
   try {
     const { movieId } = req.params;
-    const shows = await Show.find({ movie: movieId }).populate("movie");
-    res.json({ success: true, shows });
+    const shows = await Show.find({ movie: movieId, showDateTime: {$gte: new Date()} });
+    const movie = await Movie.findById(movieId);
+    const dateTime = {};
+
+    shows.forEach((show)=>{
+      const date = show.showDateTime.toISOString().split("T")[0];
+      if(!dateTime[date]){
+        dateTime[date] = []
+      }
+      dateTime[date].push({time: show.showDateTime, showId: show._id})
+    })
+
+    res.json({ success: true, movie, dateTime });
   } catch (error) {
     console.error(error);
     res.json({ success: false, message: error.message });

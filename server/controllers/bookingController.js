@@ -1,6 +1,6 @@
 import Booking from "../models/Booking.js";
 import Show from "../models/Show.js"
-
+import stripe from 'stripe';
 
 
 // availibility of seat
@@ -39,8 +39,7 @@ export const createBooking = async (req, res)=>{
         }
 
         // get show details
-
-        const showData = await Show.findById(showId).populate('movie');
+        const showData = await Show.findById(showId).populate('movie')
 
         //create booking
         const booking =  await Booking.create({
@@ -61,7 +60,36 @@ export const createBooking = async (req, res)=>{
 
         // for payment stripe is used here 
 
-        res.json({success: true, message: 'Booked Successfully'})
+        const stripeInstance = new stripe(process.env.STRIPE_SECRET_KEY)
+
+        //line atems for stripe
+        const line_items = [{
+            price_data: {
+                currency: 'usd',
+                product_data:{
+                   name: showData.movie.title
+                },
+                unit_amount: Math.floor(booking.amount)* 100
+            },
+            quantity: 1
+        }]
+
+        //session for payment
+        const session = await stripeInstance.checkout.sessions.create({
+            success_url:`${origin}/loading/my-bookings`,
+            cancel_url:`${origin}/my-bookings`,
+            line_items: line_items,
+            mode: 'payment',
+            metadata:{
+                bookingId: booking._id.toString()
+            },
+            expires_at: Math.floor(Date.now()/1000) + 30 *60 //30 min session time
+        })
+        booking.paymentLink = session.url
+        await booking.save()
+
+
+        res.json({success: true, url: session.url})
 
     } catch (error) {
         console.log(error.message);

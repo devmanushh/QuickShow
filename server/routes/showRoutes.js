@@ -1,9 +1,11 @@
 import express, { Router } from "express";
 import { addShow, getNowPlayingMovies, getShow, getShows } from "../controllers/showController.js";
 import { protectAdmin } from "../middleware/auth.js";
+import { getAllShows } from "../controllers/adminController.js";
 
 const showRouter = express.Router();
-
+//showRouter.get('/now-playing', getNowPlayingMovies); 
+// for testing api after got an error
 showRouter.get('/now-playing', protectAdmin, getNowPlayingMovies)
 showRouter.post('/add', protectAdmin, addShow)
 showRouter.get("/all", getShows)

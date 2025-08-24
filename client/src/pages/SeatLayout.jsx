@@ -23,7 +23,7 @@ const SeatLayout = () => {
   const {axios, getToken, user} = useAppContext()
 
   const getShow=async()=>{
-    const show = dummyShowsData.find(show=>show._id===id)
+    //const show = dummyShowsData.find(show=>show._id===id)
     // if(show){
     //   setShow({
     //     movie:show,
@@ -89,11 +89,12 @@ const SeatLayout = () => {
     try {
       if(!user) return toast.error('Please login to proceed')
       if(!selectedTime || !selectedSeats.length) return toast.error('Please select Time and Seats');
-      const {data} = await axios.post('/api/booking/create', {showId: selectedTime.showId,selectedSeats}, {headers: {Authorization:`Bearer ${await getToken()}`}})
+      const {data} = await axios.post('/api/booking/create', {showId: selectedTime.showId, selectedSeats}, {headers: {Authorization:`Bearer ${await getToken()}`}})
 
       if(data.success){
-        toast.success(data.message)
-        navigate('/my-bookings')
+        // toast.success(data.message)
+        // navigate('/my-bookings')
+        window.location.href = data.url;
       }else{
         toast.error(data.message);
       }

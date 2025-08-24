@@ -76,15 +76,14 @@ const AddShows = () => {
       if(!selectedMovie || Object.keys(dateTimeSelection).length===0 ||!showPrice){
         return toast.error('Missing required fields');
       }
-      const showsInput = Object.entries(dateTimeSelection).flatMap(([date, times]) =>
-         times.map((time) => ({
-         date,
-         time
-      })));
+      const showsInput = Object.entries(dateTimeSelection).map(([date, time]) =>
+        ({date, time}));
+      //console.log(showPrice);
+      
 
         const payload = {
-          movieId:selectedMovie._id,
-          // changed the above _id to id
+          movieId: selectedMovie,
+          // changed the above Movie_id Movie
 
           showsInput,
           showPrice: Number(showPrice)
@@ -92,6 +91,8 @@ const AddShows = () => {
         const {data} = await axios.post('/api/show/add', payload, {
           headers: {Authorization:`Bearer ${await getToken()}`}
         })
+        //console.log(data.success);
+        
         if(data.success){
           toast.success(data.message)
           setSelectedMovie(null)

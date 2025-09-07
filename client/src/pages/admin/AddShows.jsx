@@ -80,9 +80,10 @@ const AddShows = () => {
         ({date, time}));
       //console.log(showPrice);
       
-
+        // console.log(selectedMovie);
+        
         const payload = {
-          movieId: selectedMovie,
+          movieId: selectedMovie.id,
           // changed the above Movie_id Movie
 
           showsInput,

@@ -13,7 +13,8 @@ const movieSchema = new mongoose.Schema(
     original_language: { type: String, },
     tagline: { type: String, },
     vote_average:{ type: Number, required: true },
-    runtime: { type: Number, required: true },
+  runtime: { type: Number, required: true },
+  trailer: { type: String }, // YouTube/video key or URL
   },
   { timestamps: true }
 );

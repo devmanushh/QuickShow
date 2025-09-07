@@ -42,17 +42,17 @@ const Footer = () => {
         <div className="w-full md:w-1/4 flex flex-col items-center text-center">
           <h3 className="text-white font-semibold mb-4">Company</h3>
           <ul className="space-y-3 text-sm">
-            <li><Link to="/" className="hover:text-white">Home</Link></li>
-            <li><Link to="/info/aboutus" className="hover:text-white">About us</Link></li>
-            <li><Link to="/info/contactus" className="hover:text-white">Contact us</Link></li>
-            <li><Link to="/info/privacypolicy" className="hover:text-white">Privacy Policy</Link></li>
+            <li><Link to="/footer/home" className="hover:text-white">Home</Link></li>
+            <li><Link to="/footer/aboutus" className="hover:text-white">About us</Link></li>
+            <li><Link to="/footer/contactus" className="hover:text-white">Contact us</Link></li>
+            <li><Link to="/footer/privacypolicy" className="hover:text-white">Privacy Policy</Link></li>
           </ul>
         </div>
 
         {/* Get in touch */}
         <div className="w-full md:w-1/4 flex flex-col items-center text-center">
           <h3 className="text-white font-semibold mb-4">Get in touch</h3>
-          <p className="text-sm mb-2">+91 9777752711</p>
+          <p className="text-sm mb-2">+91 9000000000</p>
           <p className="text-sm">contactus@quicksearch.com</p>
         </div>
       </div>

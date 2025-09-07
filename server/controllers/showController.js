@@ -28,21 +28,34 @@ export const addShow = async (req, res) => {
     let movie = await Movie.findById(movieId);
 
     if (!movie) {
-      // fetch movie and cast data from tmdb
-      const [movieDetailsResponse, movieCreditsResponse] = await Promise.all([
+      // fetch movie, cast, and trailer data from tmdb
+      const [movieDetailsResponse, movieCreditsResponse, movieVideosResponse] = await Promise.all([
         axios.get(`https://api.themoviedb.org/3/movie/${movieId}`, {
           headers: { Authorization: `Bearer ${process.env.TMDB_API_KEY}` },
         }),
         axios.get(`https://api.themoviedb.org/3/movie/${movieId}/credits`, {
           headers: { Authorization: `Bearer ${process.env.TMDB_API_KEY}` },
         }),
+        axios.get(`https://api.themoviedb.org/3/movie/${movieId}/videos`, {
+          headers: { Authorization: `Bearer ${process.env.TMDB_API_KEY}` },
+        }),
       ]);
 
       const movieApiData = movieDetailsResponse.data;
       const movieCreditsData = movieCreditsResponse.data;
+      const movieVideosData = movieVideosResponse.data;
+
+      // Find the first YouTube trailer
+      let trailerKey = null;
+      if (movieVideosData && Array.isArray(movieVideosData.results)) {
+        const trailer = movieVideosData.results.find(
+          v => v.type === 'Trailer' && v.site === 'YouTube'
+        );
+        if (trailer) trailerKey = trailer.key;
+      }
 
       const movieDetails = {
-        _id: movieId, //
+        _id: movieId,
         title: movieApiData.title,
         overview: movieApiData.overview,
         poster_path: movieApiData.poster_path,
@@ -54,8 +67,9 @@ export const addShow = async (req, res) => {
         tagline: movieApiData.tagline || "",
         vote_average: movieApiData.vote_average,
         runtime: movieApiData.runtime,
+        trailer: trailerKey,
       };
-//add movie to db 
+      //add movie to db 
       movie = await Movie.create(movieDetails);
     }
     const showsToCreate = []
@@ -119,7 +133,7 @@ export const getShow = async (req, res) => {
       dateTime[date].push({time: show.showDateTime, showId: show._id})
     })
 
-    res.json({ success: true, movie, dateTime });
+  res.json({ success: true, movie, dateTime });
   } catch (error) {
     console.error(error);
     res.json({ success: false, message: error.message });

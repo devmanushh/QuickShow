@@ -6,9 +6,14 @@ import Movies from './pages/Movies.jsx'
 import SeatLayout from './pages/SeatLayout.jsx'
 import Favorite from './pages/Favourite.jsx'
 import MyBookings from './pages/MyBookings.jsx'
+import Theaters from './pages/Theaters.jsx'
+import HomeFooter from './pages/footer/HomeFooter.jsx';
+import AboutUsFooter from './pages/footer/AboutUsFooter.jsx';
+import ContactUsFooter from './pages/footer/ContactUsFooter.jsx';
+import PrivacyPolicyFooter from './pages/footer/PrivacyPolicyFooter.jsx';
 import Home from './pages/Home.jsx'
 import ReactPlayer from "react-player";
-import Toaster from 'react-hot-toast'
+import { Toaster } from 'react-hot-toast'
 import MovieDetails from './pages/MovieDetails.jsx'
 import { Routes, Route, useLocation } from 'react-router-dom'
 import Layout from './pages/admin/Layout.jsx'
@@ -27,7 +32,7 @@ const App = () => {
   const {user} = useAppContext()
   return (
     <>
-    {/* <Toaster/> */}
+    <Toaster/>
     {!isAdminRoute && <Navbar/>}
 
     <Routes>
@@ -37,8 +42,13 @@ const App = () => {
       <Route path='/movies/:id/:date'element={ <SeatLayout/>}/>
       <Route path='/my-bookings'element={ <MyBookings/>}/>
       <Route path='/loading/:nextUrl'element={ <Loading/>}/>
-      <Route path='/favorite'element={ <Favorite/>}/>
-      <Route path='/admin/*' element={user ? <Layout/>:(
+  <Route path='/favorite'element={ <Favorite/>}/>
+  <Route path='/theaters' element={<Theaters/>}/>
+  <Route path='/footer/home' element={<HomeFooter/>}/>
+  <Route path='/footer/aboutus' element={<AboutUsFooter/>}/>
+  <Route path='/footer/contactus' element={<ContactUsFooter/>}/>
+  <Route path='/footer/privacypolicy' element={<PrivacyPolicyFooter/>}/>
+  <Route path='/admin/*' element={user ? <Layout/>:(
         <div className='min-h-screen flex justify-center items-center'>
           <SignIn fallbackRedirectUrl={'/admin'}/>
         </div>

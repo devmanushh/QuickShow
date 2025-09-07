@@ -23,13 +23,6 @@ const SeatLayout = () => {
   const {axios, getToken, user} = useAppContext()
 
   const getShow=async()=>{
-    //const show = dummyShowsData.find(show=>show._id===id)
-    // if(show){
-    //   setShow({
-    //     movie:show,
-    //     dateTime:dummyDateTimeData
-    //   })
-    // }
     try {
       const {data } = await axios.get(`/api/show/${id}`)
       if(data.success){
@@ -43,13 +36,16 @@ const SeatLayout = () => {
 
   const handleSeatClick = (seatId)=>{
     if(!selectedTime){
-      return toast("Select The Time First..")
+      toast.error("Select The Time First..")
+      return 
     }
     if(!selectedSeats.includes(seatId) && selectedSeats.length>4){
-      return toast("You can Select only 5 Seats")
+      toast.error("You can Select only 5 Seats")
+      return
     }
     if(occupiedSeats.includes(seatId)){
-      return toast('This seat is occupied')
+      toast.error('This seat is occupied')
+      return
     }
     setSelectedSeats(prev =>prev.includes(seatId)? prev.filter(seat=> seat!== seatId):[...prev,seatId])
   }
